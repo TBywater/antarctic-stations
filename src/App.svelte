@@ -4,6 +4,7 @@
     import Help from './Help.svelte';
     import Switch from './Switch.svelte';
     import YearControls from './YearControls.svelte';
+    import SimpleHeat from './simpleheat.js';
 
     import { select } from 'd3-selection';
     import { geoPath, geoOrthographic, geoGraticule } from 'd3-geo';
@@ -14,7 +15,7 @@
 
     import land from './geo/land.json';
     import ice from './geo/ice.json';
-    import stations from './stations/stations.tsv';
+    import stations from './stations/antsites.tsv';
 
     const otherColorHex = '#777';
     const colors = {
@@ -34,7 +35,7 @@
     // move McMurdo station to end of list to display it in foreground
     stations.push(
         stations.splice(
-            stations.findIndex(s => s.name === 'McMurdo'), 1
+            stations.findIndex(s => s.name === 'Scott Base'), 1
         )[0]
     );
 
@@ -55,7 +56,7 @@
 
     const estYears = _uniq(stations.map(s => s.year_est));
     const minYear = Math.min(...estYears);
-    const maxYear = 2020;
+    const maxYear = 2023;
     const years = _range(minYear, maxYear + 1);
 
     let year = maxYear;
@@ -153,6 +154,7 @@
         <div>Type: <span class='highlight'>${station.type}</span></div>
         <div>Location: <span class='highlight'>${station.location}</span></div>
         <div>Established: <span class='highlight'>${station.display_year_est}</span></div>
+        <div>People: <span class='highlight'>${station.size}</span></div>
         `;
         if (station.notes) content += `<div class='notes'>${station.notes}</div>`;
         tooltipContent.html(content);
@@ -248,6 +250,8 @@
             .classed('graticule outer', true)
             .attr('d', path);
 
+        const biggo = stations.size+10;
+
         circles = mapG
             .selectAll('circle')
             .data(stations)
@@ -255,7 +259,10 @@
             .append('circle')
             .attr('cx', d => projection([d.lon, d.lat])[0])
             .attr('cy', d => projection([d.lon, d.lat])[1])
-            .attr('r', '5px');
+            .attr('r', d=> d.size*0.1);
+
+        
+
 
         circles.on('mouseover', function(d) {
             showTooltip(this, d);
@@ -267,6 +274,24 @@
         key = select('#key');
         tooltip = select('#tooltip');
         tooltipContent = select('#tooltip-content');
+
+//  >      var heat = SimpleHeat(map);
+
+// >        heat.data(stations.map(d => projection([d.lon, d.lat, d.size])[1])
+        // set data of [[x, y, value], ...] format
+// set point radius and blur radius (25 and 15 by default)
+//>        .radius(10, 10)
+
+// optionally customize gradient colors, e.g. below
+// (would be nicer if d3 color scale worked here)
+// heat.gradient({0: '#0000ff', 0.5: '#00ff00', 1: '#ff0000'});
+
+// set maximum for domain
+//>    .max(d3.max(station, d => +d.size))
+
+// draw into canvas, with minimum opacity threshold
+//>    .draw(0.50);
+
 
         init();
     });
