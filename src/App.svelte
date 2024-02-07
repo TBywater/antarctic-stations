@@ -15,19 +15,22 @@
 
     import land from './geo/land.json';
     import ice from './geo/ice.json';
-    import stations from './stations/antsites.tsv';
+    import stations from './stations/iaatomaster.tsv';
 
     const otherColorHex = '#777';
     const colors = {
         season: {
             'Permanent': '#864bff',
-            'Summer': '#17c37b'
+            'Summer': '#17c37b',
+            'Tourism' : '#FFC0CB'
         },
         country: {
             'United States': '#17c37b',
             'Russia / Soviet Union': '#c10e23',
             'United Kingdom': '#ffad1e',
             'Argentina': '#0033ff',
+            'New Zealand': '#000000',
+            'Tourism': '#FFC0CB',
             'Other (incl. joint)': otherColorHex
         }
     };
@@ -96,7 +99,7 @@
             const color = colors[keyType][item];
 
             const fillColor = parseColor(color);
-            fillColor.opacity = 0.7;
+            fillColor.opacity = 0.5;
 
             key.append('div')
                 .text(item)
@@ -250,8 +253,8 @@
             .classed('graticule outer', true)
             .attr('d', path);
 
-        const biggo = stations.size+10;
-
+        var biggo = d=> 5 + (d.size/500)
+    
         circles = mapG
             .selectAll('circle')
             .data(stations)
@@ -259,7 +262,8 @@
             .append('circle')
             .attr('cx', d => projection([d.lon, d.lat])[0])
             .attr('cy', d => projection([d.lon, d.lat])[1])
-            .attr('r', d=> d.size*0.1);
+            .attr('r', biggo)
+            .style('box-shadow', 0, 0, 40, 40, );
 
         
 
@@ -297,7 +301,12 @@
     });
 </script>
 
+
+
 <div id="map" on:click="{hideTooltipDesktop}">
+    <div class="col">
+        <YearControls bind:year {minYear} {maxYear} {years} />
+    </div>
     <div class="svg-container"></div>
     <div id="tooltip">
         <div class="tooltip-close" on:click={hideTooltip}>×</div>
@@ -312,6 +321,4 @@
         <Help />
     </div>
 </div>
-<div class="col">
-    <YearControls bind:year {minYear} {maxYear} {years} />
-</div>
+

@@ -123,8 +123,10 @@
     .year {
         position: relative;
         font-family: 'PT Mono', monospace;
-        font-size: 20px;
+        font-size: 40px;
+        font-weight: 800;
         margin: 0 5px;
+        color:#ffffff;
     }
     @media (min-width: 600px) {
         .year {
